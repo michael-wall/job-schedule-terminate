@@ -1,0 +1,3 @@
+Bundle-Name: terminate-task
+Bundle-SymbolicName: com.mw.dispatch.terminate
+Bundle-Version: 1.0.0

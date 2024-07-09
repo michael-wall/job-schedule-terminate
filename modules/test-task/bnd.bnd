@@ -1,0 +1,3 @@
+Bundle-Name: test-task
+Bundle-SymbolicName: com.mw.dispatch.test
+Bundle-Version: 1.0.0
