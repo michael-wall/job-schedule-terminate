@@ -41,7 +41,7 @@ public class TerminateDispatchTaskExecutor extends BaseDispatchTaskExecutor {
 		
 		String currentJobName = currentDispatchTrigger.getName() + " [" + currentDispatchTrigger.getDispatchTaskExecutorType() + "]";
 		
-		_log.info("starting: " + currentJobName);
+		_log.info("starting " + currentJobName);
 
 		UnicodeProperties dispatchTaskSettingsUnicodeProperties = currentDispatchTrigger.getDispatchTaskSettingsUnicodeProperties();
 
@@ -56,13 +56,17 @@ public class TerminateDispatchTaskExecutor extends BaseDispatchTaskExecutor {
 			String jobName = dispatchTrigger.getName() + " [" + dispatchTrigger.getDispatchTaskExecutorType() + "]";
 			
 			if (dispatchTrigger.getDispatchTaskExecutorType().equalsIgnoreCase(TYPE)) {
-				_log.info("skipping self: " + jobName);
+				_log.info(jobName + ": skipping self. :)");
 				
 				continue;
 			}
 			
-			_log.info("checking: " + jobName);
+			if (!dispatchTrigger.isActive()) {
+				_log.info(jobName + ": skipping, not active.");	
+			}			
 			
+			_log.info(jobName + ": checking...");
+
 			DispatchLog dispatchLog = _dispatchLogLocalService.fetchLatestDispatchLog(dispatchTrigger.getDispatchTriggerId(), DispatchTaskStatus.IN_PROGRESS);
 			
 			if (dispatchLog != null) {
@@ -81,11 +85,11 @@ public class TerminateDispatchTaskExecutor extends BaseDispatchTaskExecutor {
 					_log.info(jobName + ", dispatchLog: " + dispatchLog.getDispatchLogId() + ", within the allowed runtime.");
 				}
 			} else {
-				_log.info("skipping as no In Progress log found: " + jobName);	
+				_log.info(jobName + ": skipping, no In Progress log found.");	
 			}
 		}
 		
-		_log.info("ending: " + currentJobName);
+		_log.info("ending " + currentJobName);
 	}
 
 	@Override
