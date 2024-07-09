@@ -35,13 +35,15 @@ public class TestDispatchTaskExecutor extends BaseDispatchTaskExecutor {
 		long runCount = GetterUtil.getLong(dispatchTaskSettingsUnicodeProperties.getProperty("runCount"), 270);
 		long delay = GetterUtil.getLong(dispatchTaskSettingsUnicodeProperties.getProperty("delay"), 10000);
 		
-		_log.info("runCount: " + runCount + ", delay: " + delay);
+		String jobName = dispatchTrigger.getName() + " [" + dispatchTrigger.getDispatchTaskExecutorType() + "]";
+		
+		_log.info(jobName + ", runCount: " + runCount + ", delay: " + delay);
 
 		for (int i = 0; i < runCount; i++) {
 			
 			Thread.sleep(delay);
 	
-			_log.info(i);
+			_log.info(jobName + ", " + i);
 		}
 		
 	}

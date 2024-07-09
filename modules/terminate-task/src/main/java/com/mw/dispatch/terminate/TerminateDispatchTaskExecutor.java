@@ -7,7 +7,6 @@ import com.liferay.dispatch.executor.DispatchTaskStatus;
 import com.liferay.dispatch.model.DispatchLog;
 import com.liferay.dispatch.model.DispatchTrigger;
 import com.liferay.dispatch.service.DispatchLogLocalService;
-import com.liferay.dispatch.service.DispatchLogLocalServiceUtil;
 import com.liferay.dispatch.service.DispatchTriggerLocalService;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -52,10 +51,12 @@ public class TerminateDispatchTaskExecutor extends BaseDispatchTaskExecutor {
 		List<DispatchTrigger> dispatchTriggers = _dispatchTriggerLocalService.getDispatchTriggers(-1, -1); // Get all of them
 		
 		for (DispatchTrigger dispatchTrigger: dispatchTriggers) {
-			_log.info("checking: " + dispatchTrigger.getDispatchTaskExecutorType());
+			String jobName = dispatchTrigger.getName() + " [" + dispatchTrigger.getDispatchTaskExecutorType() + "]";
+			
+			_log.info("checking: " + jobName);
 			
 			if (dispatchTrigger.getDispatchTaskExecutorType().equalsIgnoreCase(TYPE)) {
-				_log.info("skipping " + dispatchTrigger.getDispatchTaskExecutorType());
+				_log.info("skipping " + jobName);
 				
 				continue;
 			}
@@ -67,11 +68,11 @@ public class TerminateDispatchTaskExecutor extends BaseDispatchTaskExecutor {
 				if (dispatchLog.getStartDate().before(new Date(System.currentTimeMillis() - (allowedRuntimeMilliseconds)))) {
 					dispatchLog.setStatus(DispatchTaskStatus.FAILED.getStatus());
 				
-					DispatchLogLocalServiceUtil.updateDispatchLog(dispatchLog);
+					_dispatchLogLocalService.updateDispatchLog(dispatchLog);
 					
-					_log.info("dispatchLog: " + dispatchLog.getDispatchLogId() + ", updated status to Failed.");
+					_log.info(jobName + ", dispatchLog: " + dispatchLog.getDispatchLogId() + ", updated status to Failed.");
 				} else {
-					_log.info("dispatchLog: " + dispatchLog.getDispatchLogId() + ", within the allowed runtime.");
+					_log.info(jobName + ", dispatchLog: " + dispatchLog.getDispatchLogId() + ", within the allowed runtime.");
 				}
 			}
 		}
