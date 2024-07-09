@@ -55,13 +55,13 @@ public class TerminateDispatchTaskExecutor extends BaseDispatchTaskExecutor {
 		for (DispatchTrigger dispatchTrigger: dispatchTriggers) {
 			String jobName = dispatchTrigger.getName() + " [" + dispatchTrigger.getDispatchTaskExecutorType() + "]";
 			
-			_log.info("checking: " + jobName);
-			
 			if (dispatchTrigger.getDispatchTaskExecutorType().equalsIgnoreCase(TYPE)) {
-				_log.info("skipping " + jobName);
+				_log.info("skipping self: " + jobName);
 				
 				continue;
 			}
+			
+			_log.info("checking: " + jobName);
 			
 			DispatchLog dispatchLog = _dispatchLogLocalService.fetchLatestDispatchLog(dispatchTrigger.getDispatchTriggerId(), DispatchTaskStatus.IN_PROGRESS);
 			
@@ -70,8 +70,9 @@ public class TerminateDispatchTaskExecutor extends BaseDispatchTaskExecutor {
 				if (dispatchLog.getStartDate().before(new Date(System.currentTimeMillis() - (allowedRuntimeMilliseconds)))) {
 					dispatchLog.setStatus(DispatchTaskStatus.FAILED.getStatus());
 					dispatchLog.setEndDate(new Date(System.currentTimeMillis()));
-					dispatchLog.setError("Marked as Failed by " + currentJobName + " due to exceeding allowed runtime of " + allowedRuntimeSeconds + " seconds.");
-					dispatchLog.setOutput("Marked as Failed by " + currentJobName + " due to exceeding allowed runtime of " + allowedRuntimeSeconds + " seconds.");
+					String message = "Marked as Failed by " + currentJobName + " due to exceeding allowed runtime of " + allowedRuntimeSeconds + " seconds.";
+					dispatchLog.setError(message);
+					dispatchLog.setOutput(message);
 					
 					_dispatchLogLocalService.updateDispatchLog(dispatchLog);
 					
@@ -79,6 +80,8 @@ public class TerminateDispatchTaskExecutor extends BaseDispatchTaskExecutor {
 				} else {
 					_log.info(jobName + ", dispatchLog: " + dispatchLog.getDispatchLogId() + ", within the allowed runtime.");
 				}
+			} else {
+				_log.info("skipping as no In Progress log found: " + jobName);	
 			}
 		}
 		
