@@ -1,6 +1,6 @@
-This is a POC create a custom Job Scheduler that sets the status of Job Scheduler Dispatch Logs to Failed if the job has been running for more than a set time e.g. 30 minutes.
+This is a POC to create a custom Job Scheduler that sets the status of Job Scheduler Dispatch Logs to Failed if the job has been running for more than a set length of time e.g. 30 minutes.
 
-This has been tested locally in an unclustered Liferay DXP 2024.q1.5 using JDK 11.
+This has been tested locally in an unclustered Liferay DXP 2024.q1.5 using JDK 8 for compile and runtime.
 
 Steps:
 1. Build and deploy the 'terminate-task / com.mw.dispatch.terminate-1.0.0.jar module.
