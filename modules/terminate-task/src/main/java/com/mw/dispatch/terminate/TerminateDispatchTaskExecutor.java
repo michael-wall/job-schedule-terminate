@@ -39,7 +39,9 @@ public class TerminateDispatchTaskExecutor extends BaseDispatchTaskExecutor {
 			DispatchTaskExecutorOutput dispatchTaskExecutorOutput)
 		throws Exception {
 		
-		_log.info("starting...");
+		String currentJobName = currentDispatchTrigger.getName() + " [" + currentDispatchTrigger.getDispatchTaskExecutorType() + "]";
+		
+		_log.info("starting: " + currentJobName);
 
 		UnicodeProperties dispatchTaskSettingsUnicodeProperties = currentDispatchTrigger.getDispatchTaskSettingsUnicodeProperties();
 
@@ -67,7 +69,10 @@ public class TerminateDispatchTaskExecutor extends BaseDispatchTaskExecutor {
 				 // Only set as failed if it has been running for longer than allowedRuntimeSeconds
 				if (dispatchLog.getStartDate().before(new Date(System.currentTimeMillis() - (allowedRuntimeMilliseconds)))) {
 					dispatchLog.setStatus(DispatchTaskStatus.FAILED.getStatus());
-				
+					dispatchLog.setEndDate(new Date(System.currentTimeMillis()));
+					dispatchLog.setError("Marked as Failed by " + currentJobName + " due to exceeding allowed runtime of " + allowedRuntimeSeconds + " seconds.");
+					dispatchLog.setOutput("Marked as Failed by " + currentJobName + " due to exceeding allowed runtime of " + allowedRuntimeSeconds + " seconds.");
+					
 					_dispatchLogLocalService.updateDispatchLog(dispatchLog);
 					
 					_log.info(jobName + ", dispatchLog: " + dispatchLog.getDispatchLogId() + ", updated status to Failed.");
@@ -77,7 +82,7 @@ public class TerminateDispatchTaskExecutor extends BaseDispatchTaskExecutor {
 			}
 		}
 		
-		_log.info("finishing...");
+		_log.info("ending: " + currentJobName);
 	}
 
 	@Override
